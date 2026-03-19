@@ -103,11 +103,11 @@ class TDSFNet(nn.Module):
         self.tucker_cli = Tuckergeneration(config)
         self.tucker_derm = Tuckergeneration(config)
 
-        self.linear_c = nn.Linear(self.rank[0]*2, self.scale_dim)
+        self.linear_c = nn.Linear(self.rank[0], self.scale_dim)
         self.linear_h = nn.Linear(self.rank[1], self.scale_dim)
         self.linear_w = nn.Linear(self.rank[2], self.scale_dim)
 
-        self.c_linear = nn.Linear(self.scale_dim, self.core[0]*2)
+        self.c_linear = nn.Linear(self.scale_dim, self.core[0])
         self.h_linear = nn.Linear(self.scale_dim, self.core[1])
         self.w_linear = nn.Linear(self.scale_dim, self.core[2])
 

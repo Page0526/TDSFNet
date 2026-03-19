@@ -23,7 +23,7 @@ class Attention_core(nn.Module):
             nn.ReLU(inplace=True)
         )
         self.conv_w = nn.Sequential(
-            nn.Conv2d(config.core[0]*2, self.out_channel, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(config.core[0], self.out_channel, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(self.out_channel),
             nn.ReLU(inplace=True)
         )
@@ -50,15 +50,15 @@ class Attention_core(nn.Module):
         self.psi = nn.InstanceNorm2d(self.num_attention_heads)
 
         for _ in range(self.num_attention_heads):
-            query1 = nn.Linear(self.core_shape[0], self.core_shape[0]*2, bias=False)
+            query1 = nn.Linear(self.core_shape[0], self.core_shape[0], bias=False)
             query2 = nn.Linear(self.core_shape[1], self.core_shape[1], bias=False)
             query3 = nn.Linear(self.core_shape[2], self.core_shape[2], bias=False)
 
-            key1 = nn.Linear(self.core_shape[0]*2, self.core_shape[0]*2, bias=False)
+            key1 = nn.Linear(self.core_shape[0], self.core_shape[0], bias=False)
             key2 = nn.Linear(self.core_shape[1], self.core_shape[1], bias=False)
             key3 = nn.Linear(self.core_shape[2], self.core_shape[2], bias=False)
 
-            value1 = nn.Linear(self.core_shape[0]*2, self.core_shape[0]*2, bias=False)
+            value1 = nn.Linear(self.core_shape[0], self.core_shape[0], bias=False)
             value2 = nn.Linear(self.core_shape[1], self.core_shape[1], bias=False)
             value3 = nn.Linear(self.core_shape[2], self.core_shape[2], bias=False)
 
@@ -75,7 +75,7 @@ class Attention_core(nn.Module):
             self.value3.append(copy.deepcopy(value3))
 
         self.softmax = nn.Softmax(dim=3)
-        self.out1 = nn.Linear(self.core_shape[0]*2, self.core_shape[0], bias=False)
+        self.out1 = nn.Linear(self.core_shape[0], self.core_shape[0], bias=False)
         self.out2 = nn.Linear(self.core_shape[1], self.core_shape[1], bias=False)
         self.out3 = nn.Linear(self.core_shape[2], self.core_shape[2], bias=False)
 
