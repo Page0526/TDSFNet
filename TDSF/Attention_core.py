@@ -27,7 +27,7 @@ class Attention_core(nn.Module):
             nn.BatchNorm2d(self.out_channel),
             nn.ReLU(inplace=True)
         )
-        self.attn_norm1 = nn.LayerNorm(config.core[0]*2, eps=1e-6)
+        self.attn_norm1 = nn.LayerNorm(config.core[0], eps=1e-6)
         self.attn_norm2 = nn.LayerNorm(config.core[1], eps=1e-6)
         self.attn_norm3 = nn.LayerNorm(config.core[2], eps=1e-6)
 

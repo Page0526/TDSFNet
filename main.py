@@ -28,7 +28,6 @@ def build_metrics(num_classes, device):
     """
     metrics = MetricCollection({
         'acc':           MulticlassAccuracy(num_classes=num_classes, average='macro'),
-        'balanced_acc':  MulticlassAccuracy(num_classes=num_classes, average='macro'),  # macro acc == balanced acc
         'f1_macro':      MulticlassF1Score(num_classes=num_classes, average='macro'),
         'f1_weighted':   MulticlassF1Score(num_classes=num_classes, average='weighted'),
         'precision':     MulticlassPrecision(num_classes=num_classes, average='macro'),
@@ -330,26 +329,35 @@ if __name__ == '__main__':
         print(random_seeds + i)
         log, out_dir = CreateLogger(mode, model_name, i, data_mode)
 
-        wandb.init(
-            project='TDSFNet on SPC',
-            name=f'{model_name}_round{i}',
-            config={
-                'model':       model_name,
-                'mode':        mode,
-                'shape':       shape,
-                'batch_size':  batch_size,
-                'lr':          lr,
-                'epochs':      epochs,
-                'swa_epoch':   swa_epoch,
-                'data_mode':   data_mode,
-                'num_classes': num_classes,
-                'random_seed': random_seeds + i,
-            },
-            reinit=True,
-            save_code=True
-        )
+        # wandb.init(
+        #     project='TDSFNet on SPC',
+        #     name=f'{model_name}_round{i}',
+        #     config={
+        #         'model':       model_name,
+        #         'mode':        mode,
+        #         'shape':       shape,
+        #         'batch_size':  batch_size,
+        #         'lr':          lr,
+        #         'epochs':      epochs,
+        #         'swa_epoch':   swa_epoch,
+        #         'data_mode':   data_mode,
+        #         'num_classes': num_classes,
+        #         'random_seed': random_seeds + i,
+        #     },
+        #     reinit=True,
+        #     save_code=True
+        # )
 
         net = TDSFNet(class_list=class_list, config=config.get_model_config()).cuda()
+        # from torchinfo import summary
+
+        # dummy_input = (
+        # torch.randn(1, 3, 224, 224),
+        # torch.randn(1, 3, 224, 224),
+        # )
+
+        # print(summary(net, input_data=(dummy_input, ), device='cpu', depth=2))
+        # raise
 
         batches_per_epoch = len(train_dataloader)
         wandb.watch(net, log='gradients', log_freq=batches_per_epoch)

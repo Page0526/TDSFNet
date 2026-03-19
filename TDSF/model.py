@@ -163,15 +163,15 @@ class TDSFNet(nn.Module):
         cli_core, cli_c, cli_h, cli_w = self.tucker_cli(x_clic)
         derm_core, derm_c, derm_h, derm_w = self.tucker_derm(x_derm)
 
-        # f_core = (cli_core + derm_core) / 2 #[256, 14, 14]
-        # f_c = (cli_c + derm_c) / 2 #[C_scale, 256]
-        # f_h = (cli_h + derm_h) / 2 #[14, 14]
-        # f_w = (cli_w + derm_w) / 2 #[14, 14]
+        f_core = (cli_core + derm_core) / 2 #[256, 14, 14]
+        f_c = (cli_c + derm_c) / 2 #[C_scale, 256]
+        f_h = (cli_h + derm_h) / 2 #[14, 14]
+        f_w = (cli_w + derm_w) / 2 #[14, 14]
 
-        f_core = torch.cat((cli_core, derm_core), dim=1)
-        f_c = torch.cat((cli_c, derm_c), dim=2)
-        f_h = (cli_h + derm_h) / 2 
-        f_w = (cli_w + derm_w) / 2 
+        # f_core = torch.cat((cli_core, derm_core), dim=1)
+        # f_c = torch.cat((cli_c, derm_c), dim=2)
+        # f_h = (cli_h + derm_h) / 2 
+        # f_w = (cli_w + derm_w) / 2 
 
         # f_core = self.conv_core(f_core)#[256, 14, 14]
         c = self.linear_c(f_c)  # (B, C, dim)
