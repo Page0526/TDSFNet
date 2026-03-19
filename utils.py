@@ -72,11 +72,11 @@ def set_seed(seed=15):
       torch.cuda.manual_seed_all(seed)
       torch.backends.cudnn.deterministic = True
 
-def CreateLogger(mode, model_name='resnet-50',round_=None,data_mode='Normal'):
+def CreateLogger(mode, ts, model_name='resnet-50',round_=None,data_mode='Normal'):
 
     out_dir = './{}_{}_{}_weight_file/{}/'.format(mode, model_name, data_mode, round_)
-    os.makedirs(out_dir + '/checkpoint/', exist_ok=True)
-    os.makedirs(out_dir + '/train/', exist_ok=True)
+    os.makedirs(out_dir + f'/checkpoint/{ts}', exist_ok=True)
+    os.makedirs(out_dir + f'/train/{ts}', exist_ok=True)
     #os.makedirs(out_dir + '/backup/', exist_ok=True)
 
     log = Logger()

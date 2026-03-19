@@ -7,7 +7,8 @@ import torch
 import Config as config
 import wandb
 import numpy as np
-
+from datetime import datetime
+import time
 from torchmetrics import MetricCollection
 from torchmetrics.classification import (
     MulticlassF1Score,
@@ -22,12 +23,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 def build_metrics(num_classes, device):
-    """
-    Returns a MetricCollection on the given device.
-    Call .reset() before each epoch, .update() each batch, .compute() at end of epoch.
-    """
+    
     metrics = MetricCollection({
-        'acc':           MulticlassAccuracy(num_classes=num_classes, average='macro'),
+        # 'acc':           MulticlassAccuracy(num_classes=num_classes, average='macro'),
         'f1_macro':      MulticlassF1Score(num_classes=num_classes, average='macro'),
         'f1_weighted':   MulticlassF1Score(num_classes=num_classes, average='weighted'),
         'precision':     MulticlassPrecision(num_classes=num_classes, average='macro'),
@@ -95,8 +93,7 @@ def train(net, train_dataloader, model_name, metrics):
         train_loss += loss_fusion.item()
         train_acc  += acc_fusion.item()
 
-        # probs = torch.softmax(logit_fusion, dim=1).detach()
-        probs = logit_fusion.argmax(dim=1)
+        probs = torch.softmax(logit_fusion, dim=1)
         metrics.update(probs, diagnosis_label)
 
     train_loss /= (index + 1)
@@ -220,7 +217,7 @@ def test(net, test_dataloader, model_name, metrics):
     return test_loss, test_acc, extra_metrics
 
 
-def run_train(model_name, mode, i, num_classes):
+def run_train(model_name, mode, i, num_classes, timestamp):
     log.write('** start training here! **\n')
     best_mean_acc = 0
 
@@ -267,8 +264,8 @@ def run_train(model_name, mode, i, num_classes):
         # ── Save best checkpoint ─────────────────────────────────────────────
         if val_acc > best_mean_acc:
             best_mean_acc = val_acc
-            torch.save(net.state_dict(), out_dir + '/checkpoint/{:.4f}val_model.pth'.format(best_mean_acc))
-            torch.save(net.state_dict(), out_dir + '/best_modal.pth')
+            torch.save(net.state_dict(), out_dir + f'/checkpoint/{timestamp}/{best_mean_acc:.4f}val_model.pth')
+            torch.save(net.state_dict(), out_dir + f'/checkpoint/{timestamp}/best_modal.pth')
             log.write('Current Best Mean Acc is {}\n'.format(best_mean_acc))
 
             wandb.run.summary['best_val_acc']  = best_mean_acc
@@ -308,6 +305,7 @@ if __name__ == '__main__':
     data_mode   = 'Normal'
     num_classes = 5
     deterministic = True
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     if deterministic:
         if data_mode == 'Normal':
@@ -327,26 +325,26 @@ if __name__ == '__main__':
             set_seed(random_seeds + i)
 
         print(random_seeds + i)
-        log, out_dir = CreateLogger(mode, model_name, i, data_mode)
+        log, out_dir = CreateLogger(mode, ts, model_name, i, data_mode)
 
-        # wandb.init(
-        #     project='TDSFNet on SPC',
-        #     name=f'{model_name}_round{i}',
-        #     config={
-        #         'model':       model_name,
-        #         'mode':        mode,
-        #         'shape':       shape,
-        #         'batch_size':  batch_size,
-        #         'lr':          lr,
-        #         'epochs':      epochs,
-        #         'swa_epoch':   swa_epoch,
-        #         'data_mode':   data_mode,
-        #         'num_classes': num_classes,
-        #         'random_seed': random_seeds + i,
-        #     },
-        #     reinit=True,
-        #     save_code=True
-        # )
+        wandb.init(
+            project='TDSFNet on SPC',
+            name=f'{ts}',
+            config={
+                'model':       model_name,
+                'mode':        mode,
+                'shape':       shape,
+                'batch_size':  batch_size,
+                'lr':          lr,
+                'epochs':      epochs,
+                'swa_epoch':   swa_epoch,
+                'data_mode':   data_mode,
+                'num_classes': num_classes,
+                'random_seed': random_seeds + i,
+            },
+            reinit=True,
+            save_code=True
+        )
 
         net = TDSFNet(class_list=class_list, config=config.get_model_config()).cuda()
         # from torchinfo import summary
@@ -366,6 +364,6 @@ if __name__ == '__main__':
         opt = optimizer
 
         cosine_learning_schule = create_cosine_learing_schdule(epochs, lr)
-        run_train(model_name, mode, i, num_classes)
+        run_train(model_name, mode, i, num_classes, ts)
 
         wandb.finish()
