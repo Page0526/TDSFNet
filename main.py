@@ -264,7 +264,6 @@ def run_train(model_name, mode, i, num_classes, timestamp):
         # ── Save best checkpoint ─────────────────────────────────────────────
         if val_acc > best_mean_acc:
             best_mean_acc = val_acc
-            torch.save(net.state_dict(), out_dir + f'/checkpoint/{timestamp}/{best_mean_acc:.4f}val_model.pth')
             torch.save(net.state_dict(), out_dir + f'/checkpoint/{timestamp}/best_modal.pth')
             log.write('Current Best Mean Acc is {}\n'.format(best_mean_acc))
 
@@ -275,7 +274,11 @@ def run_train(model_name, mode, i, num_classes, timestamp):
 
     # ── Test on best checkpoint ──────────────────────────────────────────────
     log.write('\n** Loading best model for test evaluation **\n')
-    net.load_state_dict(torch.load(out_dir + '/best_modal.pth'))
+    net.load_state_dict(torch.load(out_dir + f'/{timestamp}/best_modal.pth'))
+    # ckpt_path = '/home/trangnp/tensor-decomposition/TDSFNet/multimodal_TDSFNet_Normal_weight_file/0/checkpoint/2026-03-19_18-31-07/best_modal.pth'
+    # net.load_state_dict(torch.load(ckpt_path))
+    
+    
 
     test_loss, test_acc, test_metrics = test(net, test_dataloader, model_name, metrics)
     log.write('Round: {}, Test Loss: {:.4f}, Test Acc: {:.4f}, '
@@ -343,7 +346,9 @@ if __name__ == '__main__':
                 'random_seed': random_seeds + i,
             },
             reinit=True,
-            save_code=True
+            save_code=True,
+            # resume='allow',
+            # id='yuj6l6rp'
         )
 
         net = TDSFNet(class_list=class_list, config=config.get_model_config()).cuda()
