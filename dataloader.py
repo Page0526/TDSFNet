@@ -29,9 +29,9 @@ from albumentations import (
     RandomSizedCrop,
     OneOf,
     CLAHE,
-    RandomContrast,
-    RandomGamma,
-    RandomBrightness,
+    # RandomContrast,
+    # RandomGamma,
+    # RandomBrightness,
     ShiftScaleRotate,
     RandomBrightnessContrast,
 )
