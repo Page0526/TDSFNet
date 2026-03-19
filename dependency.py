@@ -1,9 +1,9 @@
 # image root
-test_index_path = './release_v0/release_v0/meta/test_indexes.csv'
-train_index_path = './release_v0/release_v0/meta/train_indexes.csv'
-val_index_path = './release_v0/release_v0/meta/valid_indexes.csv'
-img_info_path = './release_v0/release_v0/meta/meta.csv'
-source_dir = './release_v0/release_v0/images/'
+test_index_path = '/home/trangnp/tensor-decomposition/data/release_v0/meta/test_indexes.csv'
+train_index_path = '/home/trangnp/tensor-decomposition/data/release_v0/meta/train_indexes.csv'
+val_index_path = '/home/trangnp/tensor-decomposition/data/release_v0/meta/valid_indexes.csv'
+img_info_path = '/home/trangnp/tensor-decomposition/data/release_v0/meta/meta.csv'
+source_dir = '/home/trangnp/tensor-decomposition/data/release_v0/images/'
 
 #label_list
 nevus_list = ['blue nevus','clark nevus','combined nevus','congenital nevus','dermal nevus','recurrent nevus','reed or spitz nevus']
